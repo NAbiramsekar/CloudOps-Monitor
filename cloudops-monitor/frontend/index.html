@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CloudOps Monitor</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Cloud Monitoring & Incident Response</p>
+          <h1>CloudOps Monitor</h1>
+        </div>
+        <div class="status-pill">
+          <span class="pulse"></span>
+          <span id="system-status">Checking</span>
+        </div>
+      </header>
+
+      <section class="metrics-grid" aria-label="Application metrics">
+        <article class="metric">
+          <span>Application Status</span>
+          <strong id="application-status">--</strong>
+        </article>
+        <article class="metric">
+          <span>API Health Status</span>
+          <strong id="api-health-status">--</strong>
+        </article>
+        <article class="metric">
+          <span>Total Requests</span>
+          <strong id="total-requests">0</strong>
+        </article>
+        <article class="metric">
+          <span>Error Count</span>
+          <strong id="error-count">0</strong>
+        </article>
+        <article class="metric">
+          <span>CPU Usage</span>
+          <strong id="cpu-usage">0%</strong>
+        </article>
+        <article class="metric">
+          <span>Memory Usage</span>
+          <strong id="memory-usage">0%</strong>
+        </article>
+        <article class="metric accent">
+          <span>Active Incidents</span>
+          <strong id="active-incidents">0</strong>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <form id="incident-form" class="panel">
+          <div class="panel-heading">
+            <h2>Create Incident</h2>
+          </div>
+          <label>
+            Title
+            <input id="title" name="title" type="text" minlength="3" maxlength="120" required />
+          </label>
+          <label>
+            Description
+            <textarea id="description" name="description" rows="4" minlength="3" maxlength="1000" required></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              Severity
+              <select id="severity" name="severity">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <select id="status" name="status">
+                <option value="open" selected>Open</option>
+                <option value="investigating">Investigating</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Create Incident</button>
+          <p id="form-message" class="message" role="status"></p>
+        </form>
+
+        <section class="panel incidents-panel">
+          <div class="panel-heading">
+            <h2>Incident Queue</h2>
+            <button id="refresh-incidents" type="button" class="secondary">Refresh</button>
+          </div>
+          <div id="incidents" class="incident-list" aria-live="polite"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
