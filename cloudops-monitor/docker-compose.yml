@@ -1,0 +1,72 @@
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cloudops-fastapi
+    restart: unless-stopped
+    environment:
+      CORS_ALLOW_ORIGINS: "*"
+      AWS_REGION: "${AWS_REGION:-us-east-1}"
+      S3_BACKUP_BUCKET: "${S3_BACKUP_BUCKET:-}"
+    expose:
+      - "8000"
+    networks:
+      - cloudops
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: cloudops-nginx
+    restart: unless-stopped
+    depends_on:
+      - fastapi
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - cloudops
+
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    container_name: cloudops-prometheus
+    restart: unless-stopped
+    depends_on:
+      - fastapi
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - cloudops
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: cloudops-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: "${GRAFANA_ADMIN_USER:-admin}"
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:-admin}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - cloudops
+
+networks:
+  cloudops:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

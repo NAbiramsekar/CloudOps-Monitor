@@ -1,0 +1,1 @@
+"""CloudOps Monitor application package."""
