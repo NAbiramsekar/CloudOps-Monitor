@@ -24,14 +24,9 @@ steps:
       key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
       script: |
         set -e
-
         cd /home/ubuntu/CloudOps-Monitor/cloudops-monitor
-
         git pull origin main
-
         docker compose down
-
         docker compose up -d --build
-
         docker image prune -f
 ```
